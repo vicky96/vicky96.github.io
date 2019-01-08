@@ -86,12 +86,14 @@
       
         <p>为什么需要服务端渲染呢？<br>主要是便于seo优化，搜索引擎无法收录js渲染出来的内容，像react、vue都是用js渲染的，因此这些普通的单页面应用并不利于seo优化，所以需要服务端渲染。</p>
 <p>了解到有一个基于react的服务端渲染的框架Next.js，由于最近正好在研究react，对react比较熟悉，而且为了更进一步了解react相关内容，所以我决定使用Next.js来改造我们公司的官网( <a href="http://www.artstep.cn" target="_blank" rel="noopener">http://www.artstep.cn</a> )。不出所料，与react有些不同的地方，使用过程遇到了不少坑。。。</p>
-<p>1.同一个页面tab切换和分页切换的时候，直接重新调用getInitialProps的时候并不能在服务端渲染。<br>  这是因为getInitialProps方法只会在服务端渲染一次，只有在页面初始化渲染或者路由跳转的时候才会触发，而且不能在子组件中使用。我的解决方法是在切换的时候带着所需的参数重新跳转这个页面。不过需要去server.js中配置路由。<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">server.get(`/news/:listType/:page`, (req, res) =&gt; &#123;</span><br><span class="line">    const actualPage = &apos;/news&apos;;</span><br><span class="line">    const queryParams = &#123; listType: req.params.listType, page: req.params.page &#125;;</span><br><span class="line">    app.render(req, res, actualPage, queryParams);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>1.同一个页面tab切换和分页切换的时候，直接重新调用getInitialProps的时候并不能在服务端渲染<br>  这是因为getInitialProps方法只会在服务端渲染一次，只有在页面初始化渲染或者路由跳转的时候才会触发，而且不能在子组件中使用。我的解决方法是在切换的时候带着所需的参数重新跳转这个页面。不过需要去server.js中配置路由<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">server.get(`/news/:listType/:page`, (req, res) =&gt; &#123;</span><br><span class="line">    const actualPage = &apos;/news&apos;;</span><br><span class="line">    const queryParams = &#123; listType: req.params.listType, page: req.params.page &#125;;</span><br><span class="line">    app.render(req, res, actualPage, queryParams);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>  然后用getInitialProps提供的参数context去接收就好啦<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static async getInitialProps(context)&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.外部样式引入报错<br>  其实官方推荐的是使用css-in-js的形式，因为外部引入的css可能会出现一些问题<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> &lt;style jsx&gt;&#123;`</span><br><span class="line">    .banner&#123;</span><br><span class="line">      background: url(&apos;../static/img/index/banner.png&apos;) no-repeat;</span><br><span class="line">      background-size: 100%;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">`&#125;&lt;/style&gt;</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/08/关于Next-js那些事儿/" data-id="cjqnl0ahy0001bftqac314tze" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/08/关于Next-js那些事儿/" data-id="cjqnlrjqj0000cntqjiejue5q" class="article-share-link">Share</a>
       
       
     </footer>
@@ -136,7 +138,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/08/hello-world/" data-id="cjqnl0aho0000bftqewbtcup1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/08/hello-world/" data-id="cjqnlrjqq0001cntqz3snca90" class="article-share-link">Share</a>
       
       
     </footer>
