@@ -1,23 +1,110 @@
-extends includes/layout.pug
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><meta name="author" content="Vicky Zhou"><meta name="renderer" content="webkit"><meta name="copyright" content="Vicky Zhou"><meta name="keywords" content="Vicky's blog"><meta name="description" content="null"><meta name="Cache-Control" content="no-cache"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>关于Next.js那些事儿 · Mr.Long's Blog</title><link rel="stylesheet" href="/css/style.css?v=2018.7.9"><link rel="stylesheet" href="/css/animation.css?v=2018.7.9"><link rel="icon" href="/img/assets/favicon.ico"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.5.6"><!-- scripts--><script>(function( w ){
+  "use strict";
+  // rel=preload support test
+  if( !w.loadCSS ){
+    w.loadCSS = function(){};
+  }
+  // define on the loadCSS obj
+  var rp = loadCSS.relpreload = {};
+  // rel=preload feature support test
+  // runs once and returns a function for compat purposes
+  rp.support = (function(){
+    var ret;
+    try {
+      ret = w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      ret = false;
+    }
+    return function(){
+      return ret;
+    };
+  })();
 
-block content
-  article#post.article-entry
-    != page.content
-  // lincense
-  if(theme.copyright.enable === true && page.copyright !== false)
-    .license-wrapper
-      p 
-        span Author:  
-        a(href=config.url)= config.author
-      p 
-        span Link:  
-        a(href=page.permalink)= page.permalink
-      p 
-        span Copyright:  
-        span!= theme.copyright.license
-  include includes/partial/post-nav.pug
-  #comment
-    include includes/comment/livere.pug
-    include includes/comment/disqus.pug
-    include includes/comment/changyan.pug
-    include includes/comment/gitment.pug
+  // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+  // then change that media back to its intended value on load
+  rp.bindMediaToggle = function( link ){
+    // remember existing media attr for ultimate state, or default to 'all'
+    var finalMedia = link.media || "all";
+
+    function enableStylesheet(){
+      link.media = finalMedia;
+    }
+
+    // bind load handlers to enable media
+    if( link.addEventListener ){
+      link.addEventListener( "load", enableStylesheet );
+    } else if( link.attachEvent ){
+      link.attachEvent( "onload", enableStylesheet );
+    }
+
+    // Set rel and non-applicable media type to start an async request
+    // note: timeout allows this to happen async to let rendering continue in IE
+    setTimeout(function(){
+      link.rel = "stylesheet";
+      link.media = "only x";
+    });
+    // also enable media after 3 seconds,
+    // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+    setTimeout( enableStylesheet, 3000 );
+  };
+
+  // loop through link elements in DOM
+  rp.poly = function(){
+    // double check this to prevent external calls from running
+    if( rp.support() ){
+      return;
+    }
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      // qualify links to those with rel=preload and as=style attrs
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+        // prevent rerunning on link
+        link.setAttribute( "data-loadcss", true );
+        // bind listeners to toggle media back
+        rp.bindMediaToggle( link );
+      }
+    }
+  };
+
+  // if unsupported, run the polyfill
+  if( !rp.support() ){
+    // run once at least
+    rp.poly();
+
+    // rerun poly on an interval until onload
+    var run = w.setInterval( rp.poly, 500 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    } else if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    }
+  }
+
+
+  // commonjs
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ) );</script><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" defer></script><script src="/js/main.js?v=2018.7.9" defer></script><!-- fancybox--><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script><!-- busuanzi--><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></head><body><section class="profile-close" id="cxo-profile"><div class="profile-avatar"><i class="fa fa-caret-left"></i><img src="/img/assets/cat.png"></div><!--.profile-saying
+  i.fa.fa-comment
+  .saying--><div class="cxo-profile-inner"><div class="profile-name">longlongyu</div><div class="profile-signature">for me</div><div class="friends"><div>FRIENDS</div><span><a href="//github.com/Longlongyu" target="_black">friendA</a></span><span><a href="//github.com/" target="_black">friendB</a></span><span><a href="//github.com/" target="_black">friendC</a></span></div><div class="read-progress"></div></div></section><header id="cxo-intro" style="height: 70vh;background-image: url(/img/intro/index-bg.png);"><nav id="cxo-intro-nav"><section><div class="intro-nav-title"><a href="/">Mr.Long's Blog</a></div><div class="intro-nav-label-box"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div><i class="fa fa-bars intro-nav-menu"><div class="intro-nav-drop"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div></i><div class="clear"></div></section></nav><h1 class="post-title">关于Next.js那些事儿</h1><div class="post-intros"><div class="post-intro-meta"><span class="post-intro-time"><i class="post-intro-calendar fa fa-calendar"></i><span>2019-01-08</span></span></div></div></header><article class="cxo-up" id="cxo-content-outer"><section id="cxo-content-inner"><article class="article-entry" id="post"><p>为什么需要服务端渲染呢？<br>主要是便于seo优化，搜索引擎无法收录js渲染出来的内容，像react、vue都是用js渲染的，因此这些普通的单页面应用并不利于seo优化，所以需要服务端渲染。</p>
+<p>了解到有一个基于react的服务端渲染的框架Next.js，由于最近正好在研究react，对react比较熟悉，而且为了更进一步了解react相关内容，所以我决定使用Next.js来改造我们公司的官网( <a href="http://www.artstep.cn" target="_blank" rel="noopener">http://www.artstep.cn</a> )。不出所料，与react有些不同的地方，使用过程遇到了不少坑。。。</p>
+<p>1.同一个页面tab切换和分页切换的时候，直接重新调用getInitialProps的时候并不能在服务端渲染<br>  这是因为<code>getInitialProps</code>方法只会在服务端渲染一次，只有在页面初始化渲染或者路由跳转的时候才会触发，而且不能在子组件中使用。我的解决方法是在切换的时候带着所需的参数重新跳转这个页面。不过需要去<code>server.js</code>中配置路由<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">server.get(`/news/:listType/:page`, (req, res) =&gt; &#123;</span><br><span class="line">  const actualPage = &apos;/news&apos;;</span><br><span class="line">  const queryParams = &#123; listType: req.params.listType, page: req.params.page &#125;;</span><br><span class="line">  app.render(req, res, actualPage, queryParams);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>  然后用getInitialProps提供的参数<code>context</code>去接收就好啦<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static async getInitialProps(context)&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.外部样式引入报错<br>  其实官方推荐的是使用<code>css-in-js</code>的形式，因为外部引入的css可能会出现一些问题<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> &lt;style jsx&gt;&#123;`</span><br><span class="line">    .banner&#123;</span><br><span class="line">      background: url(&apos;../static/img/index/banner.png&apos;) no-repeat;</span><br><span class="line">      background-size: 100%;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">`&#125;&lt;/style&gt;</span><br></pre></td></tr></table></figure></p>
+<p>3.自定义404页面<br>  next.js会自动包含一个404页面，但是样式和功能并不符合网站需求，所以需要在pages文件夹中自己创建<code>_error.js</code>去重写404页面</p>
+<p>4.部署到线上之后，需要用<code>pm2</code>进程管理工具管理next.js的进程<br>  配置pm2需要创建一个<code>pm2.json</code><br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;apps&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;name&quot;: &quot;artstep&quot;,</span><br><span class="line">      &quot;cwd&quot;: &quot;./&quot;,</span><br><span class="line">      &quot;script&quot;: &quot;./server.js&quot;,</span><br><span class="line">      &quot;log_date_format&quot;: &quot;YYYY-MM-DD HH:mm Z&quot;,</span><br><span class="line">      &quot;error_file&quot;: &quot;/log/node-app/node-app.stderr.log&quot;,</span><br><span class="line">      &quot;out_file&quot;: &quot;/log/node-app.stdout.log&quot;,</span><br><span class="line">      &quot;pid_file&quot;: &quot;pids/node-geo-api.pid&quot;,</span><br><span class="line">      &quot;instances&quot;: 1,</span><br><span class="line">      &quot;min_uptime&quot;: &quot;200s&quot;,</span><br><span class="line">      &quot;max_restarts&quot;: 100,</span><br><span class="line">      &quot;max_memory_restart&quot;: &quot;1M&quot;,</span><br><span class="line">      &quot;cron_restart&quot;: &quot;1 0 * * *&quot;,</span><br><span class="line">      &quot;merge_logs&quot;: true,</span><br><span class="line">      &quot;watch&quot;:true,</span><br><span class="line">      &quot;exec_interpreter&quot;: &quot;node&quot;,</span><br><span class="line">      &quot;exec_mode&quot;: &quot;cluster&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>  然后在<code>package.json</code>中添加启动命令<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;pm2&quot;: &quot;pm2 start pm2.json&quot;</span><br></pre></td></tr></table></figure></p>
+<p>  这样就可以通过<code>pm2 start server.js --name artstep</code>来启动啦</p>
+<p>以上只是一部分坑。。。第一次使用next.js，在服务端渲染方面很是方便，但确实也遇到了一些问题，不过做完整个项目之后，发现其实还是挺容易的，只是在react的基础上改变了一些内容而已～</p>
+</article><!-- lincense--><div class="license-wrapper"><p> <span>Author:  </span><a href="http://yoursite.com">Vicky Zhou</a></p><p> <span>Link:  </span><a href="http://yoursite.com/2019/01/08/关于Next-js那些事儿/">http://yoursite.com/2019/01/08/关于Next-js那些事儿/</a></p><p> <span>Copyright:  </span><span>All articles in this blog are licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/3.0">CC BY-NC-SA 3.0</a> unless stating additionally.</span></p></div><div class="post-paginator"><a class="nextSlogan" href="/2019/01/08/hello-world/" title="Hello World"><span>NextPost ></span><br><span class="nextTitle">Hello World</span></a><div class="clear"></div></div><div id="comment"></div></section></article><footer id="cxo-footer-outer"><div id="cxo-footer-inner"><p class="footer-container"><span>Site by </span><a href="http://hexo.io"><span>Hexo</span></a><span> | theme </span><a href="https://github.com/Longlongyu/hexo-theme-Cxo"><span>Cxo</span></a></p><i class="fa fa-user"> </i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"> </i><span id="busuanzi_value_site_pv"></span></div></footer><!-- catelog--><div class="toc-wrapper" style="top: 70vh;"><div class="toc-catalog"><i class="fa fa-list"> </i><span>CATALOG</span></div></div><!-- top--><i class="fa fa-arrow-up close" id="go-up" aria-hidden="true"></i></body></html>
